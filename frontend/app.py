@@ -1031,7 +1031,12 @@ with tab_overview:
     )
 
     with st.expander("RAW DATA DUMP", expanded=False):
-        st.dataframe(raw_df.head(20), use_container_width=True)
+        raw_display = raw_df.head(20).copy()
+        money_cols = ["sales"] + spend_cols
+        for mc in money_cols:
+            if mc in raw_display.columns:
+                raw_display[mc] = raw_display[mc].apply(lambda v: f"₹{v:,.0f}")
+        st.dataframe(raw_display, use_container_width=True)
 
     # sales trend
     section_head("SALES SIGNAL")
@@ -1384,7 +1389,11 @@ with tab_model:
                  title="ROI BY CHANNEL")
     apply_chart_theme(fig, 380)
     st.plotly_chart(fig, use_container_width=True)
-    st.dataframe(roi_df, use_container_width=True, hide_index=True)
+    roi_display = roi_df.copy()
+    roi_display["total_spend"] = roi_display["total_spend"].apply(lambda v: f"₹{v:,.0f}")
+    roi_display["attributed_sales"] = roi_display["attributed_sales"].apply(lambda v: f"₹{v:,.0f}")
+    roi_display["roi"] = roi_display["roi"].apply(lambda v: f"{v:.4f}×")
+    st.dataframe(roi_display, use_container_width=True, hide_index=True)
 
     # response curves
     if R.get("response_curves"):
@@ -1511,7 +1520,11 @@ with tab_scenarios:
         )
 
     st.dataframe(
-        sim_df[["scenario", "predicted_sales", "delta_sales", "delta_pct"]],
+        sim_df[["scenario", "predicted_sales", "delta_sales", "delta_pct"]].assign(
+            predicted_sales=sim_df["predicted_sales"].apply(lambda v: f"₹{v:,.0f}"),
+            delta_sales=sim_df["delta_sales"].apply(lambda v: f"₹{v:,.0f}"),
+            delta_pct=sim_df["delta_pct"].apply(lambda v: f"{v:+.1f}%"),
+        ),
         use_container_width=True, hide_index=True,
     )
 
