@@ -1,0 +1,259 @@
+# Agentic MMM
+
+
+# Project
+
+**Agentic Market Mix Modeling System**
+
+Goal.
+
+Automatically analyze marketing data, estimate channel impact, simulate marketing strategies, and recommend the best budget allocation.
+
+---
+
+# 1. Data Ingestion Layer
+
+### Purpose
+
+Collect marketing data and store it.
+
+Typical inputs
+
+Marketing channels
+
+- TV ads
+- Google ads
+- Meta ads
+- influencer marketing
+- email marketing
+
+Business variables
+
+- discounts
+- price changes
+
+External factors
+
+- holidays
+- seasonality
+- competitor campaigns
+
+Example dataset
+
+| week | tv_spend | google_ads | influencer | discount | sales |
+| --- | --- | --- | --- | --- | --- |
+| w1 | 10000 | 5000 | 2000 | 5 | 45000 |
+| w2 | 12000 | 6000 | 1500 | 10 | 52000 |
+
+Data ingestion
+
+- Python
+- Pandas
+
+
+---
+
+# 2. Data Processing & Feature Engineering
+
+### Purpose
+
+Prepare data for modeling.
+
+Steps
+
+Cleaning
+
+- remove missing values
+- detect outliers
+
+Aggregation
+
+- convert daily data → weekly data
+
+Feature engineering
+
+Adstock transformation
+
+Models advertising carry over effect.
+
+Saturation transformation
+
+Models diminishing returns.
+
+Example
+
+```python
+TV_adstock = TV_today + decay * TV_yesterday
+```
+
+### Tech stack
+
+- Pandas
+- NumPy
+
+Visualization
+
+- Seaborn
+
+---
+
+# 3. Causal Discovery Layer
+
+### Purpose
+
+Identify **true causal relationships** in marketing data.
+
+Normal MMM models only capture correlations.
+
+This step helps estimate **real marketing impact**.
+
+Example causal graph
+
+```
+Seasonality → Sales
+Discount → Sales
+TV Ads → Brand Awareness → Sales
+Google Ads → Sales
+```
+
+### Tech stack
+
+- DoWhy
+
+
+Outcome
+
+Dataset adjusted for causal relationships.
+
+---
+
+# 4. Market Mix Modeling Layer
+
+### Purpose
+
+Estimate how much each marketing channel contributes to sales.
+
+Model learns
+
+Sales = f(TV ads, Google ads, influencer ads, discount, seasonality)
+
+Example output
+
+| channel | contribution |
+| --- | --- |
+| Google Ads | 35% |
+| TV Ads | 28% |
+| Influencers | 20% |
+| Discounts | 10% |
+| Organic | 7% |
+
+Also calculates **ROI per channel**.
+
+### Tech stack
+
+MMM library
+
+- PyMC (Bayesian regression model) 
+
+---
+
+# 5. Hyperparameter Optimization
+
+### Purpose
+
+Find best parameters for MMM model.
+
+Examples
+
+- adstock decay
+- saturation curve parameters
+- model priors
+
+Instead of manual tuning, the system searches automatically.
+
+### Tech stack
+
+- Optuna
+
+Optuna runs multiple trials and selects the best configuration.
+
+---
+
+# 6. Budget Optimization Engine
+
+### Purpose
+
+Find the best marketing budget allocation.
+
+Goal
+
+Maximize predicted sales.
+
+Constraint
+
+Total marketing budget fixed.
+
+Example
+
+Budget = ₹10,00,000
+
+Model tests allocations
+
+| channel | allocation |
+| --- | --- |
+| TV | 3L |
+| Google Ads | 4L |
+| Influencers | 2L |
+| Meta Ads | 1L |
+
+Predicted sales increase = 11%.
+
+### Tech stack
+
+Optimization
+
+- SciPy
+
+---
+
+# 7. Counterfactual Simulation Engine
+
+### Purpose
+
+Simulate **what if marketing scenarios**.
+
+Example queries
+
+- What if Google Ads increase by 30%?
+- What if TV ads stop?
+- What if influencer budget doubles?
+
+Example results
+
+Scenario A
+
+```
+TV = 4L
+Google = 3L
+Influencer = 3L
+Sales = 52L
+```
+
+Scenario B
+
+```
+TV = 2L
+Google = 5L
+Influencer = 3L
+Sales = 55L
+```
+
+System compares outcomes.
+
+### Tech stack
+
+- Python
+- NumPy
+
+---
+

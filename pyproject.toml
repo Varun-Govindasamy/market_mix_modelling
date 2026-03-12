@@ -1,0 +1,30 @@
+[project]
+name = "mmm-pipeline"
+version = "0.1.0"
+description = "Market Mix Modeling Pipeline"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pandas",
+    "numpy",
+    "matplotlib",
+    "seaborn",
+    "plotly",
+    "scikit-learn",
+    "scipy",
+    "optuna",
+    "pymc>=5.19",
+    "pytensor>=2.26",
+    "arviz",
+    "langgraph",
+    "langchain-openai",
+    "langchain-core",
+    "fastapi",
+    "python-multipart",
+    "uvicorn[standard]",
+    "streamlit",
+    "python-dotenv",
+    "dowhy",
+    "networkx",
+    "statsmodels",
+]
