@@ -879,7 +879,6 @@ def _log_html(stage_logs: list[str], total: int, max_lines: int = 14, phase_labe
 st.markdown("""
 <div class="retro-hero">
     <h1>MARKET MIX MODELING PIPELINE</h1>
-    <div class="subtitle">[ BAYESIAN MMM // BUDGET OPTIMIZATION // AI STRATEGY ]<span class="blink-cursor"></span></div>
 </div>
 """, unsafe_allow_html=True)
 
