@@ -886,7 +886,7 @@ st.markdown("""
 
 # ── Control Bar ─────────────────────────────────────────────────
 with st.container():
-    col_upload, col_budget, col_run = st.columns([3, 1.5, 1.5])
+    col_upload, col_budget, col_fweeks, col_run = st.columns([3, 1.2, 1.2, 1.5])
 
     with col_upload:
         uploaded_file = st.file_uploader("LOAD DATASET", type=["csv"])
@@ -895,6 +895,12 @@ with st.container():
         total_budget = st.number_input(
             "WEEKLY BUDGET (₹)", min_value=5000, max_value=500000,
             value=35000, step=1000,
+        )
+
+    with col_fweeks:
+        forecast_weeks = st.number_input(
+            "FORECAST WEEKS", min_value=1, max_value=52,
+            value=12, step=1,
         )
 
     with col_run:
@@ -919,13 +925,14 @@ if run_btn:
             resp = requests.post(
                 f"{API_URL}/api/pipeline/upload",
                 files={"file": (uploaded_file.name, uploaded_file.getvalue(), "text/csv")},
-                data={"total_budget": total_budget},
+                data={"total_budget": total_budget, "forecast_weeks": forecast_weeks},
                 stream=True, timeout=600,
             )
         else:
             resp = requests.post(
                 f"{API_URL}/api/pipeline/run",
-                json={"dataset_path": "mmm_dataset.csv", "total_budget": total_budget},
+                json={"dataset_path": "mmm_dataset.csv", "total_budget": total_budget,
+                      "forecast_weeks": forecast_weeks},
                 stream=True, timeout=600,
             )
         all_logs: list[str] = []     # every log across all stages
@@ -1262,7 +1269,8 @@ with tab_kpi:
 
     # ── Forecast summary (if available) ─────────────────────────
     if forecast_kpi:
-        section_head("12-WEEK FORECAST SUMMARY")
+        n_fc = len(forecast_kpi)
+        section_head(f"{n_fc}-WEEK FORECAST SUMMARY")
         fc_df = pd.DataFrame(forecast_kpi)
         fc_total = float(fc_df["predicted_sales"].sum())
         fc_avg = float(fc_df["predicted_sales"].mean())
@@ -1294,7 +1302,7 @@ with tab_kpi:
         fig.add_trace(go.Scatter(
             x=fc_df["week"], y=fc_df["predicted_sales"],
             name="POINT FORECAST", line=dict(color="#00FFFF", width=2)))
-        fig.update_layout(title="12-WEEK SALES FORECAST", xaxis_title="WEEK", yaxis_title="SALES (₹)")
+        fig.update_layout(title=f"{n_fc}-WEEK SALES FORECAST", xaxis_title="WEEK", yaxis_title="SALES (₹)")
         apply_chart_theme(fig, 340)
         st.plotly_chart(fig, use_container_width=True, key="kpi_forecast_line")
 
@@ -1569,7 +1577,8 @@ with tab_scenarios:
     # ── forecast ────────────────────────────────────────────────
     if R.get("forecast"):
         st.markdown('<div class="retro-divider"></div>', unsafe_allow_html=True)
-        section_head("12-WEEK FORECAST // OPTIMAL ALLOCATION")
+        n_fc_sc = len(fc_df)
+        section_head(f"{n_fc_sc}-WEEK FORECAST // OPTIMAL ALLOCATION")
         fc_df = pd.DataFrame(R["forecast"])
         hist_df = pd.DataFrame({"week": list(range(1, len(R["actual_sales"]) + 1)),
                                 "sales": R["actual_sales"]})
@@ -1593,7 +1602,7 @@ with tab_scenarios:
         fig.add_trace(go.Scatter(x=fc_df["week"], y=fc_df["predicted_sales"],
                                  name="FORECAST",
                                  line=dict(color="#FFB000", width=2, dash="dot")))
-        fig.update_layout(title="12-WEEK FORECAST", xaxis_title="WEEK", yaxis_title="SALES (₹)")
+        fig.update_layout(title=f"{n_fc_sc}-WEEK FORECAST", xaxis_title="WEEK", yaxis_title="SALES (₹)")
         apply_chart_theme(fig, 380)
         st.plotly_chart(fig, use_container_width=True)
 

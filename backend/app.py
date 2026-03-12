@@ -34,6 +34,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 class PipelineRequest(BaseModel):
     dataset_path: str = DATASET_PATH
     total_budget: float = 35000.0
+    forecast_weeks: int = 12
     user_scenarios: list = []
 
 
@@ -52,13 +53,15 @@ _NEXT_STAGE = {
 }
 
 
-def _run_pipeline_stream(dataset_path: str, total_budget: float, user_scenarios: list = None):
+def _run_pipeline_stream(dataset_path: str, total_budget: float,
+                         forecast_weeks: int = 12, user_scenarios: list = None):
     """Shared generator: runs the pipeline and yields NDJSON log/result events."""
     pipeline = build_pipeline()
 
     initial_state = {
         "dataset_path": dataset_path,
         "total_budget": total_budget,
+        "forecast_weeks": forecast_weeks,
         "user_scenarios": user_scenarios or [],
         "logs": [],
     }
@@ -126,6 +129,7 @@ def health():
 def upload_and_run(
     file: UploadFile = File(...),
     total_budget: float = Form(35000.0),
+    forecast_weeks: int = Form(12),
 ):
     """Accept a CSV upload, save it, and stream the pipeline."""
     if not file.filename.endswith(".csv"):
@@ -136,7 +140,7 @@ def upload_and_run(
         f.write(file.file.read())
 
     return StreamingResponse(
-        _run_pipeline_stream(save_path, total_budget),
+        _run_pipeline_stream(save_path, total_budget, forecast_weeks),
         media_type="application/x-ndjson",
     )
 
@@ -146,7 +150,8 @@ def run_pipeline(request: PipelineRequest):
     """Run the full 7-stage MMM pipeline and stream logs + results as NDJSON."""
 
     return StreamingResponse(
-        _run_pipeline_stream(request.dataset_path, request.total_budget, request.user_scenarios),
+        _run_pipeline_stream(request.dataset_path, request.total_budget,
+                             request.forecast_weeks, request.user_scenarios),
         media_type="application/x-ndjson",
     )
 

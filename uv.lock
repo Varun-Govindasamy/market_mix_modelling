@@ -1245,6 +1245,7 @@ dependencies = [
     { name = "scikit-learn" },
     { name = "scipy" },
     { name = "seaborn" },
+    { name = "statsmodels" },
     { name = "streamlit" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -1270,6 +1271,7 @@ requires-dist = [
     { name = "scikit-learn" },
     { name = "scipy" },
     { name = "seaborn" },
+    { name = "statsmodels" },
     { name = "streamlit" },
     { name = "uvicorn", extras = ["standard"] },
 ]

@@ -1,7 +1,7 @@
 """Proper time-series forecasting stage.
 
 Decomposes historical sales into trend + seasonality + marketing effect,
-then projects forward 12 weeks with 80% and 95% prediction intervals.
+then projects forward N weeks with 80% and 95% prediction intervals.
 """
 
 import numpy as np
@@ -79,9 +79,9 @@ def forecasting_stage(state: dict) -> dict:
     trend_slope, trend_intercept = np.polyfit(t_idx[-half:], trend[-half:], 1)
     logs.append(f"📈 [Forecasting Stage] Trend slope: {trend_slope:+.2f} per week")
 
-    # ── 5. Build 12-week forecast ───────────────────────────────
-    logs.append("📈 [Forecasting Stage] Projecting 12 weeks ahead...")
-    horizon = 12
+    # ── 5. Build N-week forecast ────────────────────────────────
+    horizon = state.get("forecast_weeks", 12)
+    logs.append(f"📈 [Forecasting Stage] Projecting {horizon} weeks ahead...")
     last_week = int(df["week"].max())
 
     # Optimal spend from simulation stage
@@ -135,7 +135,7 @@ def forecasting_stage(state: dict) -> dict:
     fc_total = float(fc_df["predicted_sales"].sum())
     fc_avg = float(fc_df["predicted_sales"].mean())
 
-    logs.append(f"📈 [Forecasting Stage] 12-week total: ₹{fc_total:,.0f}")
+    logs.append(f"📈 [Forecasting Stage] {horizon}-week total: ₹{fc_total:,.0f}")
     logs.append(f"📈 [Forecasting Stage] Weekly average: ₹{fc_avg:,.0f}")
     logs.append(f"📈 [Forecasting Stage] 95% interval width: ±₹{z95 * sigma:,.0f}")
     logs.append("✅ [Forecasting Stage] Forecast complete")

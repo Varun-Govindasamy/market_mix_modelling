@@ -6,6 +6,7 @@ class MMMState(TypedDict):
     # ── input ───────────────────────────────────────────────────
     dataset_path: str
     total_budget: float
+    forecast_weeks: int
     user_scenarios: list
 
     # ── data stage ──────────────────────────────────────────────
